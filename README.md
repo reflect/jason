@@ -1,5 +1,7 @@
 # Jason
 
+[![Circle CI](view-source:https://circleci.com/gh/reflect/jason/tree/master.svg?style=shield)](https://circleci.com/gh/reflect/jason)
+
 Jason is an implementation of [JSONPath](https://www.npmjs.com/package/JSONPath)
 used for querying and manipulating JSON blobs at [Reflect](https://reflect.io).
 
