@@ -1,12 +1,10 @@
-import jp from 'jsonpath';
-import merge from 'merge';
+var jp = require('jsonpath');
+var merge = require('merge');
 
-class Ref {
-  constructor(path) {
-    this._ref = true;
-    this.path = path;
-  }
-}
+var Ref = function(path) {
+  this._ref = true;
+  this.path = path;
+};
 
 /**
  * Recursively troll a path to create the relevant dependencies all the way down
@@ -27,7 +25,7 @@ var _initPath = function(obj, path) {
     paths = jp.paths(obj, prefix);
   }
 
-  paths.forEach((p) => {
+  paths.forEach(function(p) {
     return _applyToPath(obj, p.slice(1), _createObj(suffix, null));
   });
 };
@@ -109,11 +107,11 @@ var get = function(obj, path, def) {
  * @param  {Object} val  The value to set at the path.
  */
 var set = function(obj, path, val) {
-  var res = jp.apply(obj, path, () => val);
+  var res = jp.apply(obj, path, function() { return val; });
 
   if (!res.length) {
     _initPath(obj, path);
-    jp.apply(obj, path, () => val);
+    jp.apply(obj, path, function() { return val; });
   }
 };
 
