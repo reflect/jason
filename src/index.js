@@ -75,6 +75,56 @@ var _applyToPath = function(obj, path, val) {
   }
 };
 
+var doConcat = function(obj, args) {
+  var arr = [];
+
+  for (var i = 0, len = args.length; i < len; i++) {
+    var res = jp.query(obj, args[i]);
+
+    if (res.length) {
+      arr = arr.concat(res);
+    }
+  }
+
+  return arr
+}
+
+var _contains = function(arr, obj) {
+  for (var i = 0, len = arr.length; i < len; i++) {
+    if (arr[i] == obj) {
+      return true
+    }
+  }
+
+  return false;
+}
+
+var doUniq = function(obj, args) {
+  var arr = doConcat(obj, args);
+
+  if (arr.length) {
+    var index = [],
+        len = arr.length;
+
+    for (var i = 0; i < len; i++) {
+      if (!_contains(index, arr[i])) {
+        index.push(arr[i]);
+      }
+    }
+
+    arr = index;
+  }
+
+  return arr
+}
+
+const FUNCTIONS = {
+  'concat': doConcat,
+  'uniq':   doUniq,
+};
+
+const EXPRESSION_PATTERN = /^([^\$][\w]+)\((.*)\)$/;
+
 /**
  * Queries an object and returns the value at path based on jsonpath. If that
  * path is unset, then def is returned.
@@ -84,10 +134,35 @@ var _applyToPath = function(obj, path, val) {
  * @return {Object}      The value at path within obj or the default.
  */
 var get = function(obj, path, def) {
-  var res = jp.query(obj, path);
+  // TODO: This is a really nieve implementation of functions--we want to be
+  // able to support much more complicated expressions one day--but this will
+  // work for now.
+  if (path.match(EXPRESSION_PATTERN)) {
+    var match = path.match(EXPRESSION_PATTERN),
+        fn = match[1].toLowerCase(),
+        args = match[2].split(',');
 
-  if (res.length) {
-    return res[0];
+    for (var i = 0, len = args.length; i < len; i++) {
+      args[i] = args[i].trim();
+    }
+
+    var exec = FUNCTIONS[fn];
+
+    if (!exec) {
+      throw "unkown function: " + fn;
+    }
+
+    var res = exec(obj, args);
+
+    if (res && res.length) {
+      return res;
+    }
+  } else {
+    var res = jp.query(obj, path);
+
+    if (res.length) {
+      return res[0];
+    }
   }
 
   // If the default should be a ref from elsewhere then we will push for the
