@@ -76,6 +76,19 @@ var _applyToPath = function(obj, path, val) {
 };
 
 /**
+ * Queries an object and returns the true or false if the path is in the object
+ *
+ * @param  {Object} obj  An object to query.
+ * @param  {String} path A path to query against.
+ * @return {boolean}  A boolean reprsenting if the path is in the obj.
+ */
+var has = function(obj, path) {
+  var res = jp.query(obj, path);
+
+  return res.length > 0;
+};
+
+/**
  * Queries an object and returns the value at path based on jsonpath. If that
  * path is unset, then def is returned.
  * @param  {Object} obj  An object to query.
@@ -142,6 +155,7 @@ var isRef = function(o) {
 
 module.exports = {
   set: set,
+  has: has,
   get: get,
   ref: ref,
   isRef: isRef
