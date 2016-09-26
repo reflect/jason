@@ -80,7 +80,7 @@ var _applyToPath = function(obj, path, val) {
  *
  * @param  {Object} obj  An object to query.
  * @param  {String} path A path to query against.
- * @return {boolean}  A boolean reprsenting if the path is in the obj.
+ * @return {boolean}  A boolean representing if the path is in the obj.
  */
 var has = function(obj, path) {
   var res = jp.query(obj, path);
