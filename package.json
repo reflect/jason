@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/reflect/jason#readme",
   "license": "ISC",
-  "main": "index.js",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/reflect/jason.git"

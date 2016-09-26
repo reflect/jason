@@ -2,6 +2,18 @@ import json from '../src/index.js';
 import {expect} from 'chai';
 
 describe('json', () => {
+  describe('has', () => {
+    var fixture = {'test': 1};
+
+    it('should return true if the path exists', () => {
+      expect(json.has(fixture, '$.test')).to.equal(true);
+    });
+
+    it('should return false if the path doesn\'t exist', () => {
+      expect(json.has(fixture, '$.nothing')).to.equal(false);
+    });
+  });
+
   describe('get', () => {
     var fixture = {'test': 1};
 
