@@ -1,5 +1,7 @@
 import jp from 'jsonpath';
 import merge from 'merge';
+import flatMap from 'lodash/flatMap';
+import uniq from 'lodash/uniq';
 
 class Ref {
   constructor(path) {
@@ -75,52 +77,9 @@ var _applyToPath = function(obj, path, val) {
   }
 };
 
-var doConcat = function(obj, args) {
-  var arr = [];
-
-  for (var i = 0, len = args.length; i < len; i++) {
-    var res = jp.query(obj, args[i]);
-
-    if (res.length) {
-      arr = arr.concat(res);
-    }
-  }
-
-  return arr
-}
-
-var _contains = function(arr, obj) {
-  for (var i = 0, len = arr.length; i < len; i++) {
-    if (arr[i] == obj) {
-      return true
-    }
-  }
-
-  return false;
-}
-
-var doUniq = function(obj, args) {
-  var arr = doConcat(obj, args);
-
-  if (arr.length) {
-    var index = [],
-        len = arr.length;
-
-    for (var i = 0; i < len; i++) {
-      if (!_contains(index, arr[i])) {
-        index.push(arr[i]);
-      }
-    }
-
-    arr = index;
-  }
-
-  return arr
-}
-
 const FUNCTIONS = {
-  'concat': doConcat,
-  'uniq':   doUniq,
+  'concat': (obj, args) => flatMap(args, (arg) => jp.query(obj, arg)),
+  'uniq':   (obj, args) => uniq(flatMap(args, (arg) => jp.query(obj, arg)))
 };
 
 const EXPRESSION_PATTERN = /^([^\$][\w]+)\((.*)\)$/;

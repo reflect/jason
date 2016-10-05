@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "jsonpath": "^0.2.2",
+    "lodash": "^4.16.3",
     "merge": "^1.2.0"
   },
   "devDependencies": {
