@@ -15,7 +15,7 @@ describe('json', () => {
   });
 
   describe('get', () => {
-    var fixture = {'test': 1};
+    var fixture = {'test': 1, 'test2': 2};
 
     it('should get stuff by path', () => {
       expect(json.get(fixture, '$.test')).to.equal(1);
@@ -27,6 +27,18 @@ describe('json', () => {
 
     it('returns nothing when the path is empty and there is no default', () => {
       expect(json.get(fixture, '$.nothing')).to.be.undefined;
+    });
+
+    it('should concat results when using the concat function', () => {
+      expect(json.get(fixture, 'concat($.test, $.test2)')).to.eql([1, 2]);
+    });
+
+    it('should concat and uniquify results when using the uniq function', () => {
+      expect(json.get(fixture, 'uniq($.test, $.test2)')).to.eql([1, 2]);
+    });
+
+    it('should apply functions no matter the case of the name', () => {
+      expect(json.get(fixture, 'UNIQ($.test, $.test2)')).to.eql([1, 2]);
     });
   });
 

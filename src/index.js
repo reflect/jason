@@ -1,5 +1,7 @@
 import jp from 'jsonpath';
 import merge from 'merge';
+import flatMap from 'lodash/flatMap';
+import uniq from 'lodash/uniq';
 
 class Ref {
   constructor(path) {
@@ -75,6 +77,13 @@ var _applyToPath = function(obj, path, val) {
   }
 };
 
+const FUNCTIONS = {
+  'concat': (obj, args) => flatMap(args, (arg) => jp.query(obj, arg)),
+  'uniq':   (obj, args) => uniq(flatMap(args, (arg) => jp.query(obj, arg)))
+};
+
+const EXPRESSION_PATTERN = /^([^\$][\w]+)\((.*)\)$/;
+
 /**
  * Queries an object and returns the true or false if the path is in the object
  *
@@ -97,10 +106,35 @@ var has = function(obj, path) {
  * @return {Object}      The value at path within obj or the default.
  */
 var get = function(obj, path, def) {
-  var res = jp.query(obj, path);
+  // TODO: This is a really nieve implementation of functions--we want to be
+  // able to support much more complicated expressions one day--but this will
+  // work for now.
+  if (path.match(EXPRESSION_PATTERN)) {
+    var match = path.match(EXPRESSION_PATTERN),
+        fn = match[1].toLowerCase(),
+        args = match[2].split(',');
 
-  if (res.length) {
-    return res[0];
+    for (var i = 0, len = args.length; i < len; i++) {
+      args[i] = args[i].trim();
+    }
+
+    var exec = FUNCTIONS[fn];
+
+    if (!exec) {
+      throw "unkown function: " + fn;
+    }
+
+    var res = exec(obj, args);
+
+    if (res && res.length) {
+      return res;
+    }
+  } else {
+    var res = jp.query(obj, path);
+
+    if (res.length) {
+      return res[0];
+    }
   }
 
   // If the default should be a ref from elsewhere then we will push for the
