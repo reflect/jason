@@ -44,7 +44,7 @@ describe('json', () => {
 
   describe('set', () => {
     it('should set values that already exist', () => {
-      var obj = {'test': 1};
+      var obj = { 'test': 1 };
 
       json.set(obj, '$.test', 2);
       expect(obj.test).to.equal(2);
@@ -73,14 +73,14 @@ describe('json', () => {
     });
 
     it('should replace arrays when they are updated', () => {
-      var obj = {test: [1, 2]};
+      var obj = { test: [1, 2] };
 
       json.set(obj, '$.test', [1]);
       expect(obj.test.length).to.equal(1);
     });
 
     it('should replace arrays when they are updated', () => {
-      var obj = {test: [1]};
+      var obj = { test: [1] };
 
       json.set(obj, '$.test', [2, 3, 4]);
       expect(obj.test.length).to.equal(3);

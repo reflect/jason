@@ -16,22 +16,18 @@ class Ref {
  * @param  {Object} obj  The object to setup.
  * @param  {String} path The path to initialize.
  */
-var _initPath = function(obj, path) {
-  var idx = path.lastIndexOf('.'),
-      prefix = path.substr(0, idx),
-      suffix = path.substr(idx + 1),
-      paths;
-
-  paths = jp.paths(obj, prefix);
+const _initPath = (obj, path) => {
+  const idx = path.lastIndexOf('.');
+  const prefix = path.substr(0, idx);
+  const suffix = path.substr(idx + 1);
+  let paths = jp.paths(obj, prefix);
 
   if (!paths.length) {
     _initPath(obj, prefix);
     paths = jp.paths(obj, prefix);
   }
 
-  paths.forEach((p) => {
-    return _applyToPath(obj, p.slice(1), _createObj(suffix, null));
-  });
+  paths.forEach(p => _applyToPath(obj, p.slice(1), _createObj(suffix, null)));
 };
 
 /**
@@ -40,7 +36,7 @@ var _initPath = function(obj, path) {
  * @param  {Object} val  Value for the attribute.
  * @return {Object}      An object with one attribute.
  */
-var _createObj = function(name, val) {
+const _createObj = (name, val) => {
   var o = {};
 
   o[name] = val;
@@ -54,7 +50,7 @@ var _createObj = function(name, val) {
  * @param  {Array} path A resolved path from jsonpath.
  * @param  {Object} val An object to apply to the end.
  */
-var _applyToPath = function(obj, path, val) {
+const _applyToPath = (obj, path, val) => {
   var pos = obj,
       len = path.length,
       key;
@@ -78,8 +74,8 @@ var _applyToPath = function(obj, path, val) {
 };
 
 const FUNCTIONS = {
-  'concat': (obj, args) => flatMap(args, (arg) => jp.query(obj, arg)),
-  'uniq':   (obj, args) => uniq(flatMap(args, (arg) => jp.query(obj, arg)))
+  concat: (obj, args) => flatMap(args, (arg) => jp.query(obj, arg)),
+  uniq:   (obj, args) => uniq(flatMap(args, (arg) => jp.query(obj, arg)))
 };
 
 const EXPRESSION_PATTERN = /^([^\$][\w]+)\((.*)\)$/;
@@ -91,7 +87,7 @@ const EXPRESSION_PATTERN = /^([^\$][\w]+)\((.*)\)$/;
  * @param  {String} path A path to query against.
  * @return {boolean}  A boolean representing if the path is in the obj.
  */
-var has = function(obj, path) {
+const has = (obj, path) => {
   var res = jp.query(obj, path);
 
   return res.length > 0;
@@ -105,7 +101,7 @@ var has = function(obj, path) {
  * @param  {Object} def  The default to return in case the query comes up empty.
  * @return {Object}      The value at path within obj or the default.
  */
-var get = function(obj, path, def) {
+const get = (obj, path, def) => {
   // TODO: This is a really nieve implementation of functions--we want to be
   // able to support much more complicated expressions one day--but this will
   // work for now.
@@ -155,8 +151,8 @@ var get = function(obj, path, def) {
  * @param  {String} path A path to query against.
  * @param  {Object} val  The value to set at the path.
  */
-var set = function(obj, path, val) {
-  var res = jp.apply(obj, path, () => val);
+const set = (obj, path, val) => {
+  const res = jp.apply(obj, path, () => val);
 
   if (!res.length) {
     _initPath(obj, path);
@@ -170,7 +166,7 @@ var set = function(obj, path, val) {
  * @param  {String} path The path to query for a value for.
  * @return {Ref}         A new instance of Ref
  */
-var ref = function(path) {
+const ref = (path) => {
   return new Ref(path);
 };
 
@@ -179,7 +175,7 @@ var ref = function(path) {
  * @param  {Object} o Some object to test.
  * @return {boolean}  True if o is of type Ref, false otherwise.
  */
-var isRef = function(o) {
+const isRef = (o) => {
   if (!o) {
     return false;
   }
@@ -188,9 +184,9 @@ var isRef = function(o) {
 };
 
 module.exports = {
-  set: set,
-  has: has,
-  get: get,
-  ref: ref,
-  isRef: isRef
+  set,
+  has,
+  get,
+  ref,
+  isRef,
 };
