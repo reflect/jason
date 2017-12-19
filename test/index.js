@@ -15,7 +15,7 @@ describe('json', () => {
   });
 
   describe('get', () => {
-    var fixture = {'test': 1, 'test2': 2};
+    var fixture = { 'test': 1, 'test2': 2 };
 
     it('should get stuff by path', () => {
       expect(json.get(fixture, '$.test')).to.equal(1);
@@ -39,6 +39,30 @@ describe('json', () => {
 
     it('should apply functions no matter the case of the name', () => {
       expect(json.get(fixture, 'UNIQ($.test, $.test2)')).to.eql([1, 2]);
+    });
+  });
+
+  describe('derefRecursive', () => {
+    it('should recursively deref refs in an object tree', () => {
+      const fixtureObj = {
+        names: '$.names',
+        months: ['May', 'June', 'July'],
+        ages: '$.people.ages'
+      };
+
+      const fixtureVal = {
+        names: ['Steve', 'Bob'],
+        people: {
+          ages: [24, 12],
+        },
+      };
+
+      const value = json.derefRecursive(fixtureObj, fixtureVal);
+      expect(value).to.eql({
+        names: ['Steve', 'Bob'],
+        months: ['May', 'June', 'July'],
+        ages: [24, 12],
+      });
     });
   });
 

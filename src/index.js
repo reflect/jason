@@ -10,6 +10,10 @@ class Ref {
   }
 }
 
+const _isObject = (obj) => {
+  return obj !== null && typeof obj === 'object' && !Array.isArray(obj);
+}
+
 /**
  * Recursively troll a path to create the relevant dependencies all the way down
  * the chain. This lets us setup missing attributes on an object.
@@ -106,9 +110,9 @@ const get = (obj, path, def) => {
   // able to support much more complicated expressions one day--but this will
   // work for now.
   if (path.match(EXPRESSION_PATTERN)) {
-    var match = path.match(EXPRESSION_PATTERN),
-        fn = match[1].toLowerCase(),
-        args = match[2].split(',');
+    const match = path.match(EXPRESSION_PATTERN);
+    const fn = match[1].toLowerCase();
+    const args = match[2].split(',');
 
     for (var i = 0, len = args.length; i < len; i++) {
       args[i] = args[i].trim();
@@ -142,6 +146,28 @@ const get = (obj, path, def) => {
   // It wasn't a ref so we'll just return the default value.
   return def;
 };
+
+const derefRecursive = (obj, vals) => {
+  const updated = {};
+
+  const loop = (o) => {
+    Object.keys(o).forEach((key) => {
+      if (_isObject(o[key])) {
+        loop(o[key]);
+      } else if (typeof o[key] === 'string' && o[key].indexOf('$.') === 0) {
+        //const path = resolvePath(o[key], componentId);
+
+        updated[key] = get(vals, o[key]);
+      } else {
+        updated[key] = o[key];
+      }
+    });
+  };
+
+  loop(obj);
+
+  return updated;
+}
 
 /**
  * Updates an object based on the path. If it can't resolve the path, it'll
@@ -189,4 +215,5 @@ module.exports = {
   get,
   ref,
   isRef,
+  derefRecursive,
 };
