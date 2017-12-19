@@ -64,6 +64,17 @@ describe('json', () => {
         ages: [24, 12],
       });
     });
+
+    it('should allow the user to supply a callback for resolving the paths', () => {
+      const fixtureObj = { firstName: '$.NAME.name' };
+      const fixtureVal = { steve: { name: 'Steve' } };
+
+      const value = json.derefRecursive(fixtureObj, fixtureVal, (path) => {
+        return path.replace('NAME', 'steve');
+      });
+
+      expect(value).to.eql({ firstName: 'Steve' });
+    });
   });
 
   describe('set', () => {

@@ -147,17 +147,19 @@ const get = (obj, path, def) => {
   return def;
 };
 
-const derefRecursive = (obj, vals) => {
+const derefRecursive = (obj, vals, resolver) => {
   const updated = {};
+
+  if (!resolver) resolver = v => v;
 
   const loop = (o) => {
     Object.keys(o).forEach((key) => {
       if (_isObject(o[key])) {
         loop(o[key]);
       } else if (typeof o[key] === 'string' && o[key].indexOf('$.') === 0) {
-        //const path = resolvePath(o[key], componentId);
+        const path = resolver(o[key])
 
-        updated[key] = get(vals, o[key]);
+        updated[key] = get(vals, path);
       } else {
         updated[key] = o[key];
       }
