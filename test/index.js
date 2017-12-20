@@ -40,6 +40,10 @@ describe('json', () => {
     it('should apply functions no matter the case of the name', () => {
       expect(json.get(fixture, 'UNIQ($.test, $.test2)')).to.eql([1, 2]);
     });
+
+    it('should allow the user to query an object values', () => {
+      expect(json.get(fixture, 'VALUES($)')).to.eql([1, 2]);
+    });
   });
 
   describe('derefRecursive', () => {
@@ -74,6 +78,15 @@ describe('json', () => {
       });
 
       expect(value).to.eql({ firstName: 'Steve' });
+    });
+
+    it('should recognize values with expressions', () => {
+      const fixtureObj = { names: 'VALUES($.names)' };
+      const fixtureVal = { names: { person1: 'Steve', person2: 'Joe' } };
+
+      const value = json.derefRecursive(fixtureObj, fixtureVal);
+
+      expect(value).to.eql({ names: ['Steve', 'Joe'] });
     });
   });
 

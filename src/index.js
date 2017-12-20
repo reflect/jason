@@ -78,8 +78,13 @@ const _applyToPath = (obj, path, val) => {
 };
 
 const FUNCTIONS = {
+  values: (obj, args) => {
+    const values = get(obj, args[0]);
+
+    return Object.keys(values).map(key => values[key]);
+  },
   concat: (obj, args) => flatMap(args, (arg) => jp.query(obj, arg)),
-  uniq:   (obj, args) => uniq(flatMap(args, (arg) => jp.query(obj, arg)))
+  uniq: (obj, args) => uniq(flatMap(args, (arg) => jp.query(obj, arg)))
 };
 
 const EXPRESSION_PATTERN = /^([^\$][\w]+)\((.*)\)$/;
@@ -152,11 +157,14 @@ const derefRecursive = (obj, vals, resolver) => {
 
   if (!resolver) resolver = v => v;
 
+  const isRef = (ref) =>
+    typeof ref === 'string' && (ref.indexOf('$') === 0 || ref.match(EXPRESSION_PATTERN));
+
   const loop = (o) => {
     Object.keys(o).forEach((key) => {
       if (_isObject(o[key])) {
         loop(o[key]);
-      } else if (typeof o[key] === 'string' && o[key].indexOf('$.') === 0) {
+      } else if (isRef(o[key])) {
         const path = resolver(o[key])
 
         updated[key] = get(vals, path);
