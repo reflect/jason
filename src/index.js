@@ -153,7 +153,7 @@ const get = (obj, path, def) => {
 };
 
 const derefRecursive = (obj, vals, resolver) => {
-  const updated = {};
+  const updated = merge({}, obj);
 
   if (!resolver) resolver = v => v;
 
@@ -167,14 +167,12 @@ const derefRecursive = (obj, vals, resolver) => {
       } else if (isRef(o[key])) {
         const path = resolver(o[key])
 
-        updated[key] = get(vals, path);
-      } else {
-        updated[key] = o[key];
+        o[key] = get(vals, path);
       }
     });
   };
 
-  loop(obj);
+  loop(updated);
 
   return updated;
 }

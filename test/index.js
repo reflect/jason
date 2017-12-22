@@ -49,7 +49,7 @@ describe('json', () => {
   describe('derefRecursive', () => {
     it('should recursively deref refs in an object tree', () => {
       const fixtureObj = {
-        names: '$.names',
+        people: { names: '$.names' },
         months: ['May', 'June', 'July'],
         ages: '$.people.ages'
       };
@@ -63,7 +63,7 @@ describe('json', () => {
 
       const value = json.derefRecursive(fixtureObj, fixtureVal);
       expect(value).to.eql({
-        names: ['Steve', 'Bob'],
+        people: { names: ['Steve', 'Bob'] },
         months: ['May', 'June', 'July'],
         ages: [24, 12],
       });
