@@ -44,6 +44,15 @@ describe('json', () => {
     it('should allow the user to query an object values', () => {
       expect(json.get(fixture, 'VALUES($)')).to.eql([1, 2]);
     });
+
+    it('should allow multiple arguments when using the values function', () => {
+      const complexFilter = {
+        colby: { drink: 'coffee' },
+        geoff: { food: 'beefsticks' },
+      };
+
+      expect(json.get(complexFilter, 'VALUES($.colby, $.geoff)')).to.eql(['coffee', 'beefsticks']);
+    })
   });
 
   describe('derefRecursive', () => {

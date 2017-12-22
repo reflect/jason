@@ -79,12 +79,14 @@ const _applyToPath = (obj, path, val) => {
 
 const FUNCTIONS = {
   values: (obj, args) => {
-    const values = get(obj, args[0]);
+    const values = args
+      .map(arg => get(obj, arg))
+      .reduce((prev, current) => Object.assign(prev, current));
 
     return Object.keys(values).map(key => values[key]);
   },
-  concat: (obj, args) => flatMap(args, (arg) => jp.query(obj, arg)),
-  uniq: (obj, args) => uniq(flatMap(args, (arg) => jp.query(obj, arg)))
+  concat: (obj, args) => flatMap(args, arg => get(obj, arg)),
+  uniq: (obj, args) => uniq(flatMap(args, arg => get(obj, arg))),
 };
 
 const EXPRESSION_PATTERN = /^([^\$][\w]+)\((.*)\)$/;
