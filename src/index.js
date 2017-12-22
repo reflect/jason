@@ -78,12 +78,12 @@ const _applyToPath = (obj, path, val) => {
 };
 
 const FUNCTIONS = {
-  values: (obj, args) => {
+  keys: (obj, args) => {
     const values = args
       .map(arg => get(obj, arg))
       .reduce((prev, current) => Object.assign(prev, current));
 
-    return Object.keys(values).map(key => values[key]);
+    return Object.keys(values);
   },
   concat: (obj, args) => flatMap(args, arg => get(obj, arg)),
   uniq: (obj, args) => uniq(flatMap(args, arg => get(obj, arg))),
@@ -128,7 +128,7 @@ const get = (obj, path, def) => {
     var exec = FUNCTIONS[fn];
 
     if (!exec) {
-      throw "unkown function: " + fn;
+      throw new Error("unkown function: " + fn);
     }
 
     var res = exec(obj, args);
