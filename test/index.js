@@ -41,9 +41,18 @@ describe('json', () => {
       expect(json.get(fixture, 'UNIQ($.test, $.test2)')).to.eql([1, 2]);
     });
 
-    it('should allow the user to query an object values', () => {
-      expect(json.get(fixture, 'VALUES($)')).to.eql([1, 2]);
+    it('should allow the user to query an object keys', () => {
+      expect(json.get(fixture, 'KEYS($)')).to.eql(['test', 'test2']);
     });
+
+    it('should allow multiple arguments when using the keys function', () => {
+      const complexFilter = {
+        colby: { drink: 'coffee' },
+        geoff: { food: 'beefsticks' },
+      };
+
+      expect(json.get(complexFilter, 'KEYS($.colby, $.geoff)')).to.eql(['drink', 'food']);
+    })
   });
 
   describe('derefRecursive', () => {
@@ -80,13 +89,13 @@ describe('json', () => {
       expect(value).to.eql({ firstName: 'Steve' });
     });
 
-    it('should recognize values with expressions', () => {
-      const fixtureObj = { names: 'VALUES($.names)' };
+    it('should recognize keys with expressions', () => {
+      const fixtureObj = { names: 'KEYS($.names)' };
       const fixtureVal = { names: { person1: 'Steve', person2: 'Joe' } };
 
       const value = json.derefRecursive(fixtureObj, fixtureVal);
 
-      expect(value).to.eql({ names: ['Steve', 'Joe'] });
+      expect(value).to.eql({ names: ['person1', 'person2'] });
     });
   });
 
