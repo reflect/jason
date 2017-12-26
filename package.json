@@ -1,7 +1,7 @@
 {
   "name": "@reflect/jason",
   "description": "Library for working with JSON blobs",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "author": "Reflect Engineering Team",
   "bugs": {
     "url": "https://github.com/reflect/jason/issues"
